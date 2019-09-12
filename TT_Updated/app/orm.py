@@ -39,6 +39,8 @@ class ORM:
                     for field in self.fields] + [self.pk]
             curs.execute(SQL, values)
 
+        UPDATE positons SET ticker=?, number_shares=?,account_pk=? WHERE pk=? 
+
     def delete(self):
         if not self.pk:
             raise KeyError(self.__repr__() + " is not a row in " + 
