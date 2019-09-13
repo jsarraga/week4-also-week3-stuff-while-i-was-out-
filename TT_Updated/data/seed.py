@@ -15,7 +15,7 @@ def seed(dbpath=DBPATH):
     mike_bloom.set_password("password")
     mike_bloom.save()
 
-    tsla_position = Position(ticker='tsla', shares=5, account_pk=mike_bloom.pk)
+    tsla_position = Position(ticker='tsla', number_shares=5, account_pk=mike_bloom.pk)
     tsla_position.save()
 
     fake_trade = Trade(ticker='tsla', quantity=2,type=1)

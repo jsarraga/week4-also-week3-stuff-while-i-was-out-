@@ -36,17 +36,42 @@ def login():
         view.bad_input()
 
 def mainmenu(account):
-    view.mainmenu()
-    selection = view.get_input()
-    if selection == "7":
-        answer = view.quit_input()
-        if answer == "y":
-            pass # save?
-        elif answer == 'n':
-            return
-    elif selection == "1":
-        print(account.balance) 
-        print(account.get_positions())
+    while True:
+        view.mainmenu()
+        selection = view.get_input()
+        if selection == "7":
+            answer = view.quit_input()
+            if answer == "y":
+                pass # save?
+            elif answer == 'n':
+                return
+        elif selection == "1":
+            view.your_balance()
+            print(account.balance) 
+            view.your_positions()
+            pos = account.get_positions()
+            for position in pos:
+                print(position.ticker)
+        elif selection == "2":
+            amount = int(view.get_amount_input())
+            account.balance += amount
+            account.save()
+        elif selection == "3":
+            ticker = view.get_ticker_input()
+            ticker = ticker.lower()
+            get_price(ticker)
+        elif selection == "4":
+            ticker = view.get_ticker_input()
+            amount = int(view.get_amount_input())
+            account.buy(ticker, amount)
+        elif selection == "5":
+            ticker = view.get_ticker_input()
+            amount = int(view.get_amount_input())
+            account.sell(ticker, amount)
+        elif selection == "6":
+            print(account.get_trades())
+
+    
     
         
 

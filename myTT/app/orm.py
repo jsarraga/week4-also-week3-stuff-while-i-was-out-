@@ -60,7 +60,7 @@ class ORM:
     @classmethod
     def all_from_where_clause(cls, where_clause='', values=tuple()):
         SQL = "SELECT * FROM {} {};".format(cls.tablename, where_clause)
-        with sqlite3.connect(self.dbpath) as conn:
+        with sqlite3.connect(cls.dbpath) as conn:
             conn.row_factory = sqlite3.Row
             curs = conn.cursor()
             curs.execute(SQL, values)

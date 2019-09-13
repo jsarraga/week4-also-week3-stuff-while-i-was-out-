@@ -20,7 +20,7 @@ def mainmenu():
 
 def get_input():
     print()
-    print("Your choice", end="")
+    print("Your choice: ", end="")
     return input()
 
 def create_username():
@@ -30,7 +30,7 @@ def create_username():
 
 def create_password():
     print()
-    input("password: ")
+    input("Password: ")
     return input("Confirm password: ")
 
 def get_username():
@@ -47,4 +47,21 @@ def bad_input():
 def quit_input():
     print()
     print("Are you finished? y/n ")
+    return input()
+
+def your_balance():
+    print()
+    print("balance: ")
+
+def your_positions():
+    print("Positions: ")
+
+def get_amount_input():
+    print()
+    print("Amount: ", end="")
+    return int(input())
+
+def get_ticker_input():
+    print()
+    print("Stock Ticker: ", end="")
     return input()

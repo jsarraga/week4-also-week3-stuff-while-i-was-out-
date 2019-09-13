@@ -1,5 +1,7 @@
 from app.orm import ORM
-from app.util import hash_password
+from app.util import hash_password, get_price
+from app.postion import Position
+from app.trade import Trade
 
 
 class Account(ORM):
@@ -24,12 +26,12 @@ class Account(ORM):
     #get all of positions for account
         return Position.all_from_where_clause('WHERE account_pk=?', (self.pk,))
 
-    def get_postiion_for(self, ticker):
+    def get_position_for(self, ticker):
     #take in ticker symbol and get accounts position for that symbol
         ticker = ticker.lower()
         position = Position.one_from_where_clause('WHERE account_pk=? AND ticker=?', (self.pk, ticker))
-        if not position:
-            return Position(ticker=ticker, number_shares=0, account_pl=self.pk)
+        if position is None:
+            return Position(ticker=ticker, number_shares=0, account_pk=self.pk)
         return position
 
     def get_trades(self):
@@ -48,7 +50,9 @@ class Account(ORM):
         price = get_price(ticker) * amount
         if self.balance < price:
             raise ValueError("Insufficient Funds")
-        position = self.get_postiion_for(ticker)
+        position = self.get_position_for(ticker)
+        print(position.ticker)
+        print(position.number_shares)
         position.number_shares += amount
         self.balance -= price
         trade = Trade(ticker=ticker, quantity=amount, type=1,
@@ -63,11 +67,11 @@ class Account(ORM):
         price = get_price(ticker) * amount
         if position.number_shares < amount:
             raise ValueError("Insufficient stocks")
-        position = self.get_postiion_for(ticker)
+        position = self.get_position_for(ticker)
         position.number_shares -= amount
         self.balance += price
-        trade = Trade(ticker=ticker, quantity=amount, type=1,
-                    price=price, account_pk=self.pk)
+        trade = Trade(ticker=ticker, quantity=amount, type=0,
+                    price=price, account_pk=self.pk)  # changes type from 1 to 0
         trade.save()
         position.save()
         self.save()

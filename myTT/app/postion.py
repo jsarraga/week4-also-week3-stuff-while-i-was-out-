@@ -15,3 +15,7 @@ class Position(ORM):
 
     def current_value(self):
         return round(self.number_shares * get_price(self.ticker), 2)
+
+if __name__=="__main__":
+    position = Position(ticker='test',number_shares=100,account_pk=2)
+    print(position.number_shares)
