@@ -11,9 +11,9 @@ class ORM:
 
     def save(self):
         if self.pk is None:
-            self.insert()
+            self._insert()
         else:
-            self.update()
+            self._update()
 
     def _insert(self):
         with sqlite3.connect(self.dbpath) as conn:
@@ -35,6 +35,8 @@ class ORM:
             curs.execute(SQL, values)
 
     def delete(self):  
+        if not self.pk:
+            raise KeyError(self.__repr__() + " is not a row in " + self.tablename)
         
         with sqlite3.connect(self.dbpath) as conn:   
             curs = conn.cursor()
@@ -44,16 +46,15 @@ class ORM:
 
     @classmethod
     def one_from_where_clause(cls, where_clause = "", values=tuple()):    
-        SQL = "SELECT {} FROM {};".format(cls.tablename, where_clause)
-        with sqlite3.connect(self.dbpath) as conn:
-            conn.row_fatory = sqlite3.Row      # need rundown of row_factory
+        SQL = "SELECT * FROM {} {};".format(cls.tablename, where_clause)
+        with sqlite3.connect(cls.dbpath) as conn:
+            conn.row_factory = sqlite3.Row      # think of row_factory like DictReader
             curs = conn.cursor()
             curs.execute(SQL, values)
             row = curs.fetchone()
             if not row:
                 return None
-            return
-                cls(**row)                     # why cls(**row)
+            return cls(**row)                     
 
 
     @classmethod

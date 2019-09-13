@@ -50,3 +50,5 @@ def schema(dbpath=DBPATH):
             );"""
 
         cur.execute(SQL)
+
+schema()

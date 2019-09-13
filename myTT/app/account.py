@@ -1,5 +1,5 @@
 from app.orm import ORM
-
+from app.util import hash_password
 
 
 class Account(ORM):
@@ -17,7 +17,8 @@ class Account(ORM):
         return Account.one_from_where_clause("WHERE username=? AND password_hash=?", 
                                                 (username, hash_password(password)))
 
-    def set_password(self, password)
+    def set_password(self, password):
+        self.password_hash = hash_password(password)
 
     def get_positions(self):
     #get all of positions for account
@@ -28,7 +29,8 @@ class Account(ORM):
         ticker = ticker.lower()
         position = Position.one_from_where_clause('WHERE account_pk=? AND ticker=?', (self.pk, ticker))
         if not position:
-            return Position(ticker=ticker, number_shares=0,)
+            return Position(ticker=ticker, number_shares=0, account_pl=self.pk)
+        return position
 
     def get_trades(self):
     #return all trades by that user
@@ -36,7 +38,8 @@ class Account(ORM):
 
     def get_trades_for(self, ticker):
     #takes in ticker symbol, return all trades for that symbol
-        return Trade.all_from_where_clause('WHERE account_pk=? AND ticker=?' (self.pk, ticker))
+        return Trade.all_from_where_clause('WHERE account_pk=? AND ticker=?' 
+                                            (self.pk, ticker))
 
     def buy(self, ticker, amount):
         """ if balance is greater than equal to amount * current price, 
@@ -48,7 +51,7 @@ class Account(ORM):
         position = self.get_postiion_for(ticker)
         position.number_shares += amount
         self.balance -= price
-        trade = Trade(ticker=ticker, quantity=amount, type=1
+        trade = Trade(ticker=ticker, quantity=amount, type=1,
                     price=price, account_pk=self.pk)
         trade.save()
         position.save()
@@ -63,7 +66,7 @@ class Account(ORM):
         position = self.get_postiion_for(ticker)
         position.number_shares -= amount
         self.balance += price
-        trade = Trade(ticker=ticker, quantity=amount, type=1
+        trade = Trade(ticker=ticker, quantity=amount, type=1,
                     price=price, account_pk=self.pk)
         trade.save()
         position.save()
