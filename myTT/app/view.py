@@ -16,7 +16,8 @@ def mainmenu():
     print("4. buy stock")
     print("5. sell stock")
     print("6. trade history")
-    print("7. quit")
+    print("7. see api key")
+    print("8. quit")
 
 def get_input():
     print()
@@ -34,9 +35,11 @@ def create_password():
     return input("Confirm password: ")
 
 def get_username():
+    print()
     return input("Username: ")
 
 def get_password():
+    print()
     return input("Password: ")
 
 def bad_input():
@@ -59,9 +62,13 @@ def your_positions():
 def get_amount_input():
     print()
     print("Amount: ", end="")
-    return int(input())
+    return input()
 
 def get_ticker_input():
     print()
     print("Stock Ticker: ", end="")
     return input()
+
+def login_menu():
+    print()
+    print("Login ", end="")

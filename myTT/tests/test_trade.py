@@ -1,12 +1,27 @@
 from unittest import TestCase
-from app import Trade
+from app import ORM, Trade
+from data import schema, seed
+import os
+
+DIR = os.path.dirname(__file__)
+DBFILENAME = "_test.db"
+DBPATH = os.path.join(DIR, DBFILENAME)
+
+ORM.dbpath = DBPATH
 
 class TestTrade(TestCase):
+
+    def setUp(self):
+        schema(DBPATH)
+        seed(DBPATH)
+
+    def tearDown(self):
+        os.remove(DBPATH)
 
     def testTrade(self):
         trade = Trade()
         self.assertEqual(trade.tablename, "trades")
-        self.assertEqual(trade.fileds, 
+        self.assertEqual(trade.fields, 
                         ['ticker', 'quantity', 'type', 'price', 'date', 'account_pk'])
         self.assertIsInstance(trade, Trade)
         trade1 = Trade(ticker="ibm", quantity=5, type=1, price=400, date=5000, account_pk=20)
@@ -17,11 +32,10 @@ class TestTrade(TestCase):
         self.assertEqual(trade1.date, 5000)
         self.assertEqual(trade1.account_pk, 20)
 
-
-
-    def testTradeSave(self):
-        trade = Trade(ticker='aaaaaaaaa', number_shares=12)
+    def testTrade(self):
+        trade = Trade(ticker='aaaaaaaaa', quantity=12, type=0)
         trade.save()
         test = Trade.one_from_where_clause("WHERE ticker=?", ('aaaaaaaaa',))
         self.assertIsInstance(test, Trade)
-        self.assertEqual(test.number_shares, 12)
+        self.assertEqual(test.quantity, 12)
+      

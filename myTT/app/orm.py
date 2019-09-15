@@ -21,7 +21,8 @@ class ORM:
             fields = ", ".join(self.fields)
             qmarks = ", ".join(['?' for _ in self.fields])
             SQL = """ INSERT INTO {} ({}) VALUES ({})""".format(self.tablename, fields, qmarks)
-            values = [getattr(self,field) for field in self.fields]
+            values = [getattr(self, field) for field in self.fields]
+            # [self.field for field in self.fields]
             curs.execute(SQL, values)
             pk = curs.lastrowid
             self.pk = pk

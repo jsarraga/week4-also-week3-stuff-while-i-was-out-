@@ -1,10 +1,12 @@
 from app.account import Account
 from app.util import hash_password, get_price
 from app import view
+import time
 
 
 def run():
     welcomemenu()
+    
 
 def welcomemenu():
     while True:
@@ -22,7 +24,9 @@ def create_account():
     password = view.create_password()
     password_hash = hash_password(password)
     new_account = Account(username=username, password_hash=password_hash, balance=0)
+    new_account.generate_api_key()
     new_account.save()
+    view.login_menu()
     login()
     
 
@@ -39,27 +43,25 @@ def mainmenu(account):
     while True:
         view.mainmenu()
         selection = view.get_input()
-        if selection == "7":
-            answer = view.quit_input()
-            if answer == "y":
-                pass # save?
-            elif answer == 'n':
-                return
+        if selection == "8":
+            break
         elif selection == "1":
             view.your_balance()
             print(account.balance) 
             view.your_positions()
             pos = account.get_positions()
             for position in pos:
-                print(position.ticker)
+                print(position.ticker, ":", position.number_shares)
         elif selection == "2":
             amount = int(view.get_amount_input())
             account.balance += amount
+            view.your_balance()
+            print(account.balance) 
             account.save()
         elif selection == "3":
             ticker = view.get_ticker_input()
             ticker = ticker.lower()
-            get_price(ticker)
+            print("Price: $", get_price(ticker))
         elif selection == "4":
             ticker = view.get_ticker_input()
             amount = int(view.get_amount_input())
@@ -69,7 +71,16 @@ def mainmenu(account):
             amount = int(view.get_amount_input())
             account.sell(ticker, amount)
         elif selection == "6":
-            print(account.get_trades())
+            trades = account.get_trades()
+            for trade in trades:
+                date = time.ctime(int(trade.date))
+                if trade.type == 1:
+                    trade.type = "bought"
+                if trade.type == 0:
+                    trade.type = "sold"
+                print(date,":", trade.ticker.upper(), ":",trade.type,trade.quantity)
+        elif selection == "7":
+            print("Your API Key: ", account.api_key)
 
     
     

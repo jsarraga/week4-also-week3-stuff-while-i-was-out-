@@ -18,6 +18,7 @@ def schema(dbpath=DBPATH):
                 username VARCHAR(16) NOT NULL,
                 password_hash VARCHAR(128),
                 balance FLOAT,
+                api_key VARCHAR(20),
                 UNIQUE(username)
             );"""
 

@@ -2,18 +2,33 @@ from app.orm import ORM
 from app.util import hash_password, get_price
 from app.postion import Position
 from app.trade import Trade
+import random, string
 
 
 class Account(ORM):
     tablename = 'accounts'
-    fields = ['username', 'password_hash', 'balance']
+    fields = ['username', 'password_hash', 'balance', 'api_key']
 
     def __init__(self, **kwargs):
         self.username = kwargs.get('username')
         self.password_hash = kwargs.get('password_hash')
         self.balance = kwargs.get('balance')
         self.pk = kwargs.get('pk')
+        self.api_key = kwargs.get('api_key')
+
+    def generate_api_key(self):
+        letters = string.ascii_lowercase
+        key = ''.join(random.choice(letters) for i in range(20))
+        self.api_key = key
     
+    @classmethod
+    def api_authenticate(cls, api_key):
+        account = Account.one_from_where_clause("WHERE api_key=?", 
+                                                    (api_key,))
+        if account is None:
+            return None
+        return account
+
     @classmethod
     def login(cls, username, password):
         return Account.one_from_where_clause("WHERE username=? AND password_hash=?", 
@@ -51,8 +66,7 @@ class Account(ORM):
         if self.balance < price:
             raise ValueError("Insufficient Funds")
         position = self.get_position_for(ticker)
-        print(position.ticker)
-        print(position.number_shares)
+        print(position.ticker, ": ", position.number_shares)
         position.number_shares += amount
         self.balance -= price
         trade = Trade(ticker=ticker, quantity=amount, type=1,
@@ -64,15 +78,15 @@ class Account(ORM):
     def sell(self, ticker, amount):
         """ if current Postion.number_shares is greater than or equal to amount,
         updates a Position, saves a new Trade object and updates self.balance"""
+        position = self.get_position_for(ticker)
         price = get_price(ticker) * amount
         if position.number_shares < amount:
             raise ValueError("Insufficient stocks")
-        position = self.get_position_for(ticker)
+        print(position.ticker, ": ", position.number_shares)
         position.number_shares -= amount
         self.balance += price
         trade = Trade(ticker=ticker, quantity=amount, type=0,
-                    price=price, account_pk=self.pk)  # changes type from 1 to 0
+                    price=price, account_pk=self.pk)  # changed type from 1 to 0
         trade.save()
         position.save()
         self.save()
-

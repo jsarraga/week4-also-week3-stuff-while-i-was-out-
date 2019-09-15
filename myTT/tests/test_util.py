@@ -1,13 +1,23 @@
 from unittest import TestCase
-from app import util
+from app import util, ORM
+from data import schema, seed
+import os
+
+DIR = os.path.dirname(__file__)
+DBFILENAME = "_test.db"
+DBPATH = os.path.join(DIR, DBFILENAME)
+
+ORM.dbpath = DBPATH
+
 
 class testUtil(TestCase):
 
     def setUp(self):
-        pass
+        schema(DBPATH)
+        seed(DBPATH)
 
     def tearDown(self):
-        pass
+        os.remove(DBPATH)
 
     def testGetPrice(self):
         response = util.get_price("tsla")

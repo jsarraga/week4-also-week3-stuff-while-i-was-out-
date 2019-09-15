@@ -4,7 +4,7 @@ import time
 
 class Trade(ORM):
     
-    tablename = 'trades'                
+    tablename = "trades"                
     fields = ['ticker', 'quantity', 'type', 'price', 'date', 'account_pk']
 
     def __init__(self, **kwargs):
